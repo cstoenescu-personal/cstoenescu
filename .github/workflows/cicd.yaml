@@ -4,7 +4,7 @@ on:
     branches:
       - main  # when ever any code to pushed to master branch it will trigger
     
-jobs:  # we are creating jobs to perform steps
+jobs: # we are creating jobs to perform steps
   deploy:
     runs-on: ubuntu-latest # from azure pool 
     
