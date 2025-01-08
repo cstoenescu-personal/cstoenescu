@@ -26,7 +26,7 @@ jobs:  # we are creating jobs to perform steps
         npm install
         npm install aws-cdk
 
-    -name: cimpile code
-      run: |
-        cd cstoenescu
-        cdk synth
+    -name: c0mpile code
+    run: |
+      cd cstoenescu
+      cdk synth
