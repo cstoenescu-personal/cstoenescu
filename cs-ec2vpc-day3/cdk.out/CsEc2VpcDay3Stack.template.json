@@ -1,0 +1,167 @@
+{
+ "Resources": {
+  "csvm1InstanceSecurityGroupCA31AA01": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "CsEc2VpcDay3Stack/csvm1/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cs-linux-vm"
+     }
+    ],
+    "VpcId": "vpc-07eede624774fec02"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CsEc2VpcDay3Stack/csvm1/InstanceSecurityGroup/Resource"
+   }
+  },
+  "csvm1InstanceRole4062E9F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cs-linux-vm"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CsEc2VpcDay3Stack/csvm1/InstanceRole/Resource"
+   }
+  },
+  "csvm1InstanceProfile2DBBB1A3": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "csvm1InstanceRole4062E9F0"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CsEc2VpcDay3Stack/csvm1/InstanceProfile"
+   }
+  },
+  "csvm18BF0081E": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "IamInstanceProfile": {
+     "Ref": "csvm1InstanceProfile2DBBB1A3"
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t2.micro",
+    "KeyName": "splunk-key",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "csvm1InstanceSecurityGroupCA31AA01",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": "subnet-03d450bc480b2203a",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cs-linux-vm"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash"
+    }
+   },
+   "DependsOn": [
+    "csvm1InstanceRole4062E9F0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CsEc2VpcDay3Stack/csvm1/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/2WOzQrCMBCEn6X3dG0L+gIexJOlfQCJ6Ra2P0nZbCwS8u5StSdPw3wzA1NBeSyhyPTqc9ON+UQPiK1oM6oGvQtsUOnV3yOaCuLVetHWoGrRBCZ5XdiFRZ17+wf2alKkZ4iNm3DDu+5xza6nCVPaYK1ZzyjIm7kFWYJ8Nr8jSVnXIQz+8KwKKE9QZIMnyjlYoRmh+eoblmycDNMAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "CsEc2VpcDay3Stack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Outputs": {
+  "csInstanceId": {
+   "Description": "this will print instance id",
+   "Value": {
+    "Ref": "csvm18BF0081E"
+   }
+  },
+  "csvmpublicdns": {
+   "Value": {
+    "Fn::GetAtt": [
+     "csvm18BF0081E",
+     "PublicDnsName"
+    ]
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
