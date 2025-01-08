@@ -22,11 +22,11 @@ jobs:  # we are creating jobs to perform steps
 
     - name: install dependencies
       run: |
-        cd cstoenescu
+        cd cs-ec2vpc-day3
         npm install
         npm install aws-cdk
 
-    - name: c0mpile code
+    - name: compile code
       run: |
-        cd cstoenescu
+        cd cs-ec2vpc-day3
         cdk synth
