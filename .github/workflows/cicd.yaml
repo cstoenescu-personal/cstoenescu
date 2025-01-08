@@ -26,7 +26,7 @@ jobs:  # we are creating jobs to perform steps
         npm install
         npm install -g aws-cdk
 
-    - name: compile code
+    - name: compile code again 
       run: |
         cd cs-ec2vpc-day3
         cdk synth
