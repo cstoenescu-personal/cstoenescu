@@ -4,10 +4,11 @@ on:
     branches:
       - main  # when ever any code to pushed to master branch it will trigger
     
-jobs: # we are creating jobs to perform steps
-  deploy:
-    runs-on: ubuntu-latest # from azure pool 
-    
+jobs:  # we are creating jobs to perform steps
+  ec2-deploy: # job name 
+    runs-on: ubuntu-latest # from azure pool
+    needs: s3-deploy # it will run after s3-deploy job 
+
     steps: # steps to setup cdk and run code 
     - name: setup node.js 20 version
       uses: actions/setup-node@v3
@@ -18,24 +19,56 @@ jobs: # we are creating jobs to perform steps
       uses: actions/checkout@v2 
 
     - name: verify code in vm 
-      run: ls
+      run: ls 
 
-    - name: install dependencies
+    - name: install dependecies
+      run: | 
+        cd cs-day4-bestway/
+        npm install 
+        npm install -g aws-cdk 
+
+    - name: complie code 
       run: |
-        cd cs-ec2vpc-day3
-        npm install
-        npm install -g aws-cdk
-
-    - name: compile code again 
-      run: |
-        cd cs-ec2vpc-day3
-        cdk synth
-
-    - name: deploy cdk in aws account again
+        cd cs-day4-bestway/
+        cdk synth 
+    - name: deploy cdk in aws account 
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
       run: |
-        cd cs-ec2vpc-day3
-        cdk deploy --require-approval never 
+        cd cs-day4-bestway/
+        cdk deploy CsDay4ec2all --require-approval never
+  s3-deploy:
+    runs-on: ubuntu-latest # from azure pool 
+
+    steps: # steps to setup cdk and run code 
+    - name: setup node.js 20 version
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: checkout git repo code to vm 
+      uses: actions/checkout@v2 
+
+    - name: verify code in vm 
+      run: ls 
+
+    - name: install dependecies
+      run: | 
+        cd cs-day4-bestway/
+        npm install 
+        npm install -g aws-cdk 
+
+    - name: complie code 
+      run: |
+        cd cs-day4-bestway/
+        cdk synth 
+    - name: deploy cdk in aws account 
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+      run: |
+        cd cs-day4-bestway/
+        cdk deploy AshuDay4BestwayStack --require-approval never 
